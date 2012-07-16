@@ -51,6 +51,10 @@
 ;;type M-x describe-mode font-lock-mode 
 (global-font-lock-mode t)
 
+;; standard one was Monaco 12
+;; default one can be displayed by running M-x describe-font
+(set-default-font "Monaco 10")
+
 ;; to see matching parens
 (show-paren-mode t)
 
