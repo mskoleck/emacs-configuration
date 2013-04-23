@@ -1,23 +1,23 @@
-(defun ms-emacs23p () 
- "Checks if we are calling emacs version 23"
-  (if (string-match "Emacs 23" (version)) t))
+(defun ms-emacs24p () 
+ "Checks if we are calling emacs version 24"
+  (if (string-match "Emacs 24" (version)) t))
 
 (defun ms-macosxp () 
  "Checks if we are running under mac os x"
  (if  (string-match "apple-darwin" (version)) t))
 
-(defun ms-emacs23-and-macosx-p ()
+(defun ms-emacs24-and-macosx-p ()
  "Checks if we are running on mac os x and if version of emacs is 23"
-  (and (ms-emacs23p) (ms-macosxp)))
+  (and (ms-emacs24p) (ms-macosxp)))
 
-(if (eq (ms-emacs23-and-macosx-p) t) 
+(if (eq (ms-emacs24-and-macosx-p) t) 
 (progn 
-  (message "emacs23 on mac os x detected")
+  (message "emacs24 on mac os x detected")
    ;; make command act as meta
    (setq mac-command-modifier 'meta)
    ;; unbind option key so that it can be used for other purposes - polish chars input for example
    (setq mac-option-modifier 'none)
-   ;; make Emacs 23 work on mac. Dragging and dropping a file on a non running
+   ;; make Emacs 24 work on mac. Dragging and dropping a file on a non running
    ;; emacs should cause only this file to open (no additional frames)
    ;; d&d a file on a running emacs should open this file instead of appending
    ;; its contents to an existing buffer. 
