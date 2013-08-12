@@ -241,6 +241,13 @@
 ; out of selected lines.
 (global-set-key (kbd "C-c C-c") 'comment-or-uncomment-region)
 
+(defun ms-my-python-mode-hook ()
+  "My hook for `Python mode'."
+  (local-set-key (kbd "C-c C-c") 'comment-or-uncomment-region)
+  )
+
+(add-hook 'python-mode-hook 'ms-my-python-mode-hook)
+
 
 ;; (local-set-key  (kbd "C-c o") 'ff-get-other-file)
 ;; (message "hello world from obj c mode"))
