@@ -68,7 +68,7 @@
 ;; otherwise it is set to ns_selection_color by default which does not work well with 
 ;; this color theme. 
 (set-face-background 'region "#303030")
-;; blink cursor because in Emacs 23 on mac os x text under the cursor does not show well
+;; blink cursor because in Emacs 24 on mac os x text under the cursor does not show well
 (blink-cursor-mode 1)
 ;; and set its color so that it's easily visible and the text shows through
 (set-face-background 'cursor "#005500")
@@ -291,6 +291,13 @@
 ; Sets Ctrl-c Ctrl-c key combination for easy commenting
 ; out of selected lines.
 (global-set-key (kbd "C-c C-c") 'comment-or-uncomment-region)
+
+(defun ms-my-python-mode-hook ()
+  "My hook for `Python mode'."
+  (local-set-key (kbd "C-c C-c") 'comment-or-uncomment-region)
+  )
+
+(add-hook 'python-mode-hook 'ms-my-python-mode-hook)
 
 
 ;; (local-set-key  (kbd "C-c o") 'ff-get-other-file)
