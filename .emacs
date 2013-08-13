@@ -1,23 +1,23 @@
-(defun ms-emacs23p () 
- "Checks if we are calling emacs version 23"
-  (if (string-match "Emacs 23" (version)) t))
+(defun ms-emacs24p () 
+ "Checks if we are calling emacs version 24"
+  (if (string-match "Emacs 24" (version)) t))
 
 (defun ms-macosxp () 
  "Checks if we are running under mac os x"
  (if  (string-match "apple-darwin" (version)) t))
 
-(defun ms-emacs23-and-macosx-p ()
- "Checks if we are running on mac os x and if version of emacs is 23"
-  (and (ms-emacs23p) (ms-macosxp)))
+(defun ms-emacs24-and-macosx-p ()
+ "Checks if we are running on mac os x and if version of emacs is 24"
+  (and (ms-emacs24p) (ms-macosxp)))
 
-(if (eq (ms-emacs23-and-macosx-p) t) 
+(if (eq (ms-emacs24-and-macosx-p) t) 
 (progn 
-  (message "emacs23 on mac os x detected")
+  (message "emacs24 on mac os x detected")
    ;; make command act as meta
    (setq mac-command-modifier 'meta)
    ;; unbind option key so that it can be used for other purposes - polish chars input for example
    (setq mac-option-modifier 'none)
-   ;; make Emacs 23 work on mac. Dragging and dropping a file on a non running
+   ;; make Emacs 24 work on mac. Dragging and dropping a file on a non running
    ;; emacs should cause only this file to open (no additional frames)
    ;; d&d a file on a running emacs should open this file instead of appending
    ;; its contents to an existing buffer. 
@@ -33,8 +33,8 @@
 ))
 
 ;; set initial frame(window) size
-(set-frame-height (selected-frame) 70)
-(set-frame-width (selected-frame) 120)
+;;(set-frame-height (selected-frame) 100)
+;;(set-frame-width (selected-frame) 160)
 
 ;; Cause the region to be highlighted and prevent region-based commands
 ;; from running when the mark isn't active.
@@ -187,12 +187,48 @@
 (defun ms-objc-impl-file-p (file-name)
   (equal ms-file-extension ".m"))
 
+(defun ms-makefile-path ()
+  (cond ((file-exists-p "./Makefile") "./Makefile")
+		((file-exists-p "../Makefile") "../Makefile")
+		(t nil)))
+
+;; fix this function
+;; (defun ms-makefile-dryrun-buffer-to-list-of-lists (buf)
+;;   (with-current-buffer buf
+;;     (save-excursion
+;;       (goto-char (point-min))
+;;       (let ((lines '()))
+;;         (while (not (eobp))
+;;           (push (split-string
+;;                  (buffer-substring (point) (point-at-eol)) "|")
+;;                 lines)
+;;           (beginning-of-line 2))
+;;         (nreverse lines)))))
+
+(defun ms-set-clang-autocomplete-cflags ()
+  (let ((makefile-path (ms-makefile-path))
+		(makefile-buffer-name "*makefile-dryrun-buffer*"))
+	(message "makefile path: %s" makefile-path)
+	(call-process "/usr/bin/make" 
+				  nil
+				  (get-buffer-create makefile-buffer-name) 
+				  nil
+				  "-f"
+				  "foob"
+				  "-n"
+				  "check-syntax")))
+
+(ms-set-clang-autocomplete-cflags)
+
 (defun ms-customize-objc-mode () 
   ;; my customizations for objc mode
-  (setq ac-modes (append ac-modes '(objc-mode)))
-  (auto-complete-mode)
-  (if (or (file-exists-p "Makefile") (file-exists-p "../Makefile"))
-	  (flymake-mode t))
+  ;;(setq ac-modes (append ac-modes '(objc-mode)))
+  ;;(auto-complete-mode)
+  (if (ms-makefile-path)
+	  (progn 
+		(flymake-mode t)
+;;		(ms-set-clang-autocomplete-cflags)
+	))
   (local-set-key  (kbd "C-c o") 'ff-get-other-file))
 
 (defun ms-objc-mode-hook ()
@@ -211,6 +247,21 @@
 (add-to-list 'load-path "~/.site-lisp/xcode-tools")
 (require 'build-and-run)
 
+
+;; clang autocompletion configuration
+;; (add-to-list 'load-path "~/.site-lisp/emacs-clang-complete-async")
+;; (require 'auto-complete-clang-async)
+;; (defun ac-cc-mode-setup ()
+;;   (setq ac-clang-complete-executable "~/.site-lisp/emacs-clang-complete-async/clang-complete")
+;;   (setq ac-sources '(ac-source-clang-async))
+;;   (ac-clang-launch-completion-process))
+
+;; (defun my-ac-config ()
+;;   (add-hook 'objc-mode-hook 'ac-cc-mode-setup)
+;;   (add-hook 'auto-complete-mode-hook 'ac-common-setup)
+;;   (global-auto-complete-mode t))
+
+;;(my-ac-config)
 
 ;; ------------------------------------------------------
 ;; Code for ruby enhancements
