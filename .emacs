@@ -229,7 +229,8 @@
 		(flymake-mode t)
 ;;		(ms-set-clang-autocomplete-cflags)
 	))
-  (local-set-key  (kbd "C-c o") 'ff-get-other-file))
+  (local-set-key (kbd "C-c o") 'ff-get-other-file)
+  (local-set-key (kbd "C-c C-c") 'comment-or-uncomment-region))
 
 (defun ms-objc-mode-hook ()
   (message "objc mode hook called")
