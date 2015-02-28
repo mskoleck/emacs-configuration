@@ -117,6 +117,10 @@
 (require 'smooth-scrolling)
 (setq smooth-scroll-margin 2)
 
+;; be able to invoke M-x with other shortcut. C-c C-m if I miss C-x
+(global-set-key "\C-x\C-m" 'execute-extended-command)
+(global-set-key "\C-c\C-m" 'execute-extended-command)
+
 ;; set the spellchecking program to aspell
 ;;(setq ispell-program-name "aspell")
 
@@ -205,20 +209,20 @@
 ;;           (beginning-of-line 2))
 ;;         (nreverse lines)))))
 
-(defun ms-set-clang-autocomplete-cflags ()
-  (let ((makefile-path (ms-makefile-path))
-		(makefile-buffer-name "*makefile-dryrun-buffer*"))
-	(message "makefile path: %s" makefile-path)
-	(call-process "/usr/bin/make" 
-				  nil
-				  (get-buffer-create makefile-buffer-name) 
-				  nil
-				  "-f"
-				  "foob"
-				  "-n"
-				  "check-syntax")))
+;; (defun ms-set-clang-autocomplete-cflags ()
+;;   (let ((makefile-path (ms-makefile-path))
+;; 		(makefile-buffer-name "*makefile-dryrun-buffer*"))
+;; 	(message "makefile path: %s" makefile-path)
+;; 	(call-process "/usr/bin/make" 
+;; 				  nil
+;; 				  (get-buffer-create makefile-buffer-name) 
+;; 				  nil
+;; 				  "-f"
+;; 				  "foob"
+;; 				  "-n"
+;; 				  "check-syntax")))
 
-(ms-set-clang-autocomplete-cflags)
+;;(ms-set-clang-autocomplete-cflags)
 
 (defun ms-customize-objc-mode () 
   ;; my customizations for objc mode
@@ -262,7 +266,7 @@
 ;;   (add-hook 'auto-complete-mode-hook 'ac-common-setup)
 ;;   (global-auto-complete-mode t))
 
-;;(my-ac-config)
+;; (my-ac-config)
 
 ;; ------------------------------------------------------
 ;; Code for ruby enhancements
@@ -301,15 +305,9 @@
 (add-hook 'python-mode-hook 'ms-my-python-mode-hook)
 
 
-;; (local-set-key  (kbd "C-c o") 'ff-get-other-file)
-;; (message "hello world from obj c mode"))
-
-;; (add-hook 'c-mode-common-hook
-;;   (lambda() 
-;;     (local-set-key  (kbd "C-c o") 'ff-get-other-file)
-;; 	(message "hello world from obj c mode")))
-
-;;(add-to-list 'load-path "~/.site-lisp/clang-completion")
+;; Configure packages for Emacs
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
 
 ;; End of file.
-
