@@ -1,23 +1,23 @@
-(defun ms-emacs24p () 
- "Checks if we are calling emacs version 24"
-  (if (string-match "Emacs 24" (version)) t))
+(defun ms-emacs25p () 
+ "Checks if we are calling emacs version 25"
+  (if (string-match "Emacs 25" (version)) t))
 
 (defun ms-macosxp () 
  "Checks if we are running under mac os x"
  (if  (string-match "apple-darwin" (version)) t))
 
-(defun ms-emacs24-and-macosx-p ()
- "Checks if we are running on mac os x and if version of emacs is 24"
-  (and (ms-emacs24p) (ms-macosxp)))
+(defun ms-emacs25-and-macosx-p ()
+ "Checks if we are running on mac os x and if version of emacs is 25"
+  (and (ms-emacs25p) (ms-macosxp)))
 
-(if (eq (ms-emacs24-and-macosx-p) t) 
+(if (eq (ms-emacs25-and-macosx-p) t) 
 (progn 
-  (message "emacs24 on mac os x detected")
+  (message "emacs25 on mac os x detected")
    ;; make command act as meta
    (setq mac-command-modifier 'meta)
    ;; unbind option key so that it can be used for other purposes - polish chars input for example
    (setq mac-option-modifier 'none)
-   ;; make Emacs 24 work on mac. Dragging and dropping a file on a non running
+   ;; make Emacs 25 work on mac. Dragging and dropping a file on a non running
    ;; emacs should cause only this file to open (no additional frames)
    ;; d&d a file on a running emacs should open this file instead of appending
    ;; its contents to an existing buffer. 
@@ -251,6 +251,18 @@
 ;; emacs and xcode integration code
 (add-to-list 'load-path "~/.site-lisp/xcode-tools")
 (require 'build-and-run)
+
+;; emacs yaml mode
+(add-to-list 'load-path "~/.site-lisp/yaml")
+(require 'yaml-mode)
+    (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(add-hook 'yaml-mode-hook
+      '(lambda ()
+		 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+;; add indent highlights to yaml
+(add-to-list 'load-path "~/.site-lisp/highlight-indent-guides")
+(require 'highlight-indent-guides)
+(add-hook 'yaml-mode-hook 'highlight-indent-guides-mode)
 
 
 ;; clang autocompletion configuration
