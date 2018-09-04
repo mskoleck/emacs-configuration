@@ -53,7 +53,8 @@
 
 ;; standard one was Monaco 12
 ;; default one can be displayed by running M-x describe-font
-(set-default-font "Monaco 10")
+(if (eq (ms-emacs25-and-macosx-p) t) 
+(set-default-font "Monaco 10"))
 
 ;; to see matching parens
 (show-paren-mode t)
@@ -253,16 +254,18 @@
 (require 'build-and-run)
 
 ;; emacs yaml mode
-(add-to-list 'load-path "~/.site-lisp/yaml")
-(require 'yaml-mode)
-    (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-(add-hook 'yaml-mode-hook
-      '(lambda ()
-		 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-;; add indent highlights to yaml
-(add-to-list 'load-path "~/.site-lisp/highlight-indent-guides")
-(require 'highlight-indent-guides)
-(add-hook 'yaml-mode-hook 'highlight-indent-guides-mode)
+(if (eq (ms-emacs25-and-macosx-p) t)
+    (progn
+      (add-to-list 'load-path "~/.site-lisp/yaml")
+      (require 'yaml-mode)
+      (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+      (add-hook 'yaml-mode-hook
+		'(lambda ()
+		   (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+      ;; add indent highlights to yaml
+      (add-to-list 'load-path "~/.site-lisp/highlight-indent-guides")
+      (require 'highlight-indent-guides)
+      (add-hook 'yaml-mode-hook 'highlight-indent-guides-mode)))
 
 
 ;; clang autocompletion configuration
