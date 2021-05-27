@@ -1,4 +1,3 @@
-
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -60,7 +59,7 @@
 
 ;; standard one was Monaco 12
 ;; default one can be displayed by running M-x describe-font
-(if (eq (ms-emacs25-and-macosx-p) t) 
+(if (eq (ms-emacs26-and-macosx-p) t) 
 (set-default-font "Monaco 10"))
 
 ;; to see matching parens
@@ -261,7 +260,7 @@
 (require 'build-and-run)
 
 ;; emacs yaml mode
-(if (eq (ms-emacs25-and-macosx-p) t)
+(if (eq (ms-emacs26-and-macosx-p) t)
     (progn
       (add-to-list 'load-path "~/.site-lisp/yaml")
       (require 'yaml-mode)
