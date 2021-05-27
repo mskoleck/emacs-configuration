@@ -1,23 +1,30 @@
-(defun ms-emacs25p () 
- "Checks if we are calling emacs version 25"
-  (if (string-match "Emacs 25" (version)) t))
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
+(defun ms-emacs26p () 
+ "Checks if we are calling emacs version 26"
+  (if (string-match "Emacs 26" (version)) t))
 
 (defun ms-macosxp () 
  "Checks if we are running under mac os x"
  (if  (string-match "apple-darwin" (version)) t))
 
-(defun ms-emacs25-and-macosx-p ()
- "Checks if we are running on mac os x and if version of emacs is 25"
-  (and (ms-emacs25p) (ms-macosxp)))
+(defun ms-emacs26-and-macosx-p ()
+ "Checks if we are running on mac os x and if version of emacs is 26"
+  (and (ms-emacs26p) (ms-macosxp)))
 
-(if (eq (ms-emacs25-and-macosx-p) t) 
+(if (eq (ms-emacs26-and-macosx-p) t) 
 (progn 
-  (message "emacs25 on mac os x detected")
+  (message "emacs26 on mac os x detected")
    ;; make command act as meta
    (setq mac-command-modifier 'meta)
    ;; unbind option key so that it can be used for other purposes - polish chars input for example
    (setq mac-option-modifier 'none)
-   ;; make Emacs 25 work on mac. Dragging and dropping a file on a non running
+   ;; make Emacs 26 work on mac. Dragging and dropping a file on a non running
    ;; emacs should cause only this file to open (no additional frames)
    ;; d&d a file on a running emacs should open this file instead of appending
    ;; its contents to an existing buffer. 
@@ -71,7 +78,7 @@
 ;; blink cursor because in Emacs 24 on mac os x text under the cursor does not show well
 (blink-cursor-mode 1)
 ;; and set its color so that it's easily visible and the text shows through
-(set-face-background 'cursor "#005500")
+(set-face-background 'cursor "#008800")
 
 ;; remove the menu and button bars to save screen space
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -316,6 +323,9 @@
 
 (add-hook 'python-mode-hook 'ms-my-python-mode-hook)
 
+;; Settings for Octave Mode
+(setq inferior-octave-program "/usr/local/bin/octave")
+
 
 ;; Configure packages for Emacs
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -323,3 +333,15 @@
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
 
 ;; End of file.
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages (quote (## swift-mode terraform-mode hcl-mode))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
