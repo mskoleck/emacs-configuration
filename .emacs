@@ -153,111 +153,6 @@
 ;; Start emacs as a server so that it can be used by various clients as an editor
 (server-start)
 
-;; --------------------------------------------------------- 
-;; code for integrating emacs with xcode and developer tools
-;; --------------------------------------------------------- 
-
-
-;; Flymake mode settings for Objective C languaage files
-(require 'flymake)
-(add-to-list 'flymake-allowed-file-name-masks '("\\.m\\'" flymake-simple-make-init))
-
-;; auto-complete mode settings (for old 1.1 version)
-;; (add-to-list 'load-path "~/.site-lisp/auto-complete")
-;;     (require 'auto-complete)
-;;     (require 'auto-complete-config)
-;;     (global-auto-complete-mode t)
-
-(add-to-list 'load-path "~/.site-lisp/auto-complete-1.3")
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.site-lisp/auto-complete-1.3/ac-dict")
-(ac-config-default)
-
-;; find-file doesn't grok objc files for some reason, add that
-;; need find-file to do this
-(require 'find-file)
-;; open .m files for .h files
-(push ".m" (cadr (assoc "\\.h\\'" cc-other-file-alist)))
-;; open .h files for .m files
-(push (list "\\.m\\'" '(".h")) cc-other-file-alist) 
-;; do not open #include file when on that line
-
-(defun ms-basename (file-name)
-  (car (split-string file-name "\\.")))
-
-(defun ms-file-extension (file-name)
-  (cadr (split-string file-name "\\.")))
-
-(defun ms-objc-header-file-p (file-name)
-  (let ((base-name (ms-basename file-name))
-		(extension (ms-file-extension file-name)))
-	(cond ((equal extension "m") t)
-		  ((equal extension "h") (file-exists-p (concat base-name ".m")))
-		  (t nil))))
-
-(defun ms-objc-impl-file-p (file-name)
-  (equal ms-file-extension ".m"))
-
-(defun ms-makefile-path ()
-  (cond ((file-exists-p "./Makefile") "./Makefile")
-		((file-exists-p "../Makefile") "../Makefile")
-		(t nil)))
-
-;; fix this function
-;; (defun ms-makefile-dryrun-buffer-to-list-of-lists (buf)
-;;   (with-current-buffer buf
-;;     (save-excursion
-;;       (goto-char (point-min))
-;;       (let ((lines '()))
-;;         (while (not (eobp))
-;;           (push (split-string
-;;                  (buffer-substring (point) (point-at-eol)) "|")
-;;                 lines)
-;;           (beginning-of-line 2))
-;;         (nreverse lines)))))
-
-;; (defun ms-set-clang-autocomplete-cflags ()
-;;   (let ((makefile-path (ms-makefile-path))
-;; 		(makefile-buffer-name "*makefile-dryrun-buffer*"))
-;; 	(message "makefile path: %s" makefile-path)
-;; 	(call-process "/usr/bin/make" 
-;; 				  nil
-;; 				  (get-buffer-create makefile-buffer-name) 
-;; 				  nil
-;; 				  "-f"
-;; 				  "foob"
-;; 				  "-n"
-;; 				  "check-syntax")))
-
-;;(ms-set-clang-autocomplete-cflags)
-
-(defun ms-customize-objc-mode () 
-  ;; my customizations for objc mode
-  ;;(setq ac-modes (append ac-modes '(objc-mode)))
-  ;;(auto-complete-mode)
-  (if (ms-makefile-path)
-	  (progn 
-		(flymake-mode t)
-;;		(ms-set-clang-autocomplete-cflags)
-	))
-  (local-set-key (kbd "C-c o") 'ff-get-other-file)
-  (local-set-key (kbd "C-c C-c") 'comment-or-uncomment-region))
-
-(defun ms-objc-mode-hook ()
-  (message "objc mode hook called")
-  (ms-customize-objc-mode))
-
-(defun ms-c-mode-hook ()	
-  (message "c mode hook called")
-  (if (ms-objc-header-file-p (buffer-file-name))
-	  (objc-mode)))
-								 
-(add-hook 'objc-mode-hook 'ms-objc-mode-hook)
-(add-hook 'c-mode-hook 'ms-c-mode-hook)
-
-;; emacs and xcode integration code
-(add-to-list 'load-path "~/.site-lisp/xcode-tools")
-(require 'build-and-run)
 
 ;; emacs yaml mode
 (if (eq (ms-emacs26-and-macosx-p) t)
@@ -272,28 +167,6 @@
       (add-to-list 'load-path "~/.site-lisp/highlight-indent-guides")
       (require 'highlight-indent-guides)
       (add-hook 'yaml-mode-hook 'highlight-indent-guides-mode)))
-
-
-;; clang autocompletion configuration
-;; (add-to-list 'load-path "~/.site-lisp/emacs-clang-complete-async")
-;; (require 'auto-complete-clang-async)
-;; (defun ac-cc-mode-setup ()
-;;   (setq ac-clang-complete-executable "~/.site-lisp/emacs-clang-complete-async/clang-complete")
-;;   (setq ac-sources '(ac-source-clang-async))
-;;   (ac-clang-launch-completion-process))
-
-;; (defun my-ac-config ()
-;;   (add-hook 'objc-mode-hook 'ac-cc-mode-setup)
-;;   (add-hook 'auto-complete-mode-hook 'ac-common-setup)
-;;   (global-auto-complete-mode t))
-
-;; (my-ac-config)
-
-;; ------------------------------------------------------
-;; Code for ruby enhancements
-;; ------------------------------------------------------ 
-;;(add-to-list 'load-path "~/.site-lisp/ruby")
-;;(require 'rdebug)  ;; crashed
 
 
 ;; tweak registers behaviour to have a way to quickly store point
@@ -330,9 +203,12 @@
 
 
 ;; Configure packages for Emacs
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+(require 'package)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+
+;; Setting of markdown command, installed separatey through Brew
+(setq markdown-command "/usr/local/bin/markdown")
 
 ;; End of file.
 (custom-set-variables
@@ -340,7 +216,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (## swift-mode terraform-mode hcl-mode))))
+ '(package-selected-packages
+   (quote
+    (markdown-mode ## swift-mode terraform-mode hcl-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
