@@ -394,7 +394,6 @@
 
 
 (setq flymake-show-diagnostics-at-end-of-line t)
-(global-set-key (kbd "C-c ! l") #'flymake-show-buffer-diagnostics)
 
 
 ;; Swift settings end
