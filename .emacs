@@ -284,6 +284,8 @@
 
 ;; Some custom Function to be able to easily
 ;; insert a print statement for some variable
+;; modified by Gemini but the original article for that is here:
+;; https://danielde.dev/blog/emacs-for-swift-development
 (defun ms/print-swift-var-under-point ()
   "Inserts a print statement for the variable under point at the next line.
      Example: varName -> print(\"varName: \(varName)\")"
