@@ -31,7 +31,12 @@
      (mapc 'find-file ns-input-file)
      (setq ns-input-file nil))
    ;; so that input file events do not cause new frame to be opened
-   (setq ns-pop-up-frames nil)))
+   (setq ns-pop-up-frames nil)
+   ;; settings for Dired so that it doesn't pass --dired to ls, not supported on macOS
+   (setq dired-use-ls-dired nil)))
+
+
+
 
 
 ;; -------------------------------------------------
@@ -62,9 +67,9 @@
 ;; -------------------------------------------------
 
 ;; Another theme, using a more modern approach.
-;; But I could not find a theme with a pure black background
 (use-package doom-themes
-  :init (load-theme 'doom-acario-dark t))
+;;  :init (load-theme 'doom-acario-dark t))  ;; pure black background
+  :init (load-theme 'doom-one t))            ;; grey background
 
 
 ;; Package for nice icons on the mode line and in dired
@@ -97,7 +102,8 @@
 ;; standard one was Monaco 12
 ;; default one can be displayed by running M-x describe-font
 (if (eq (ms/macosxp) t) 
-    (set-frame-font "Monaco 11"))
+    ;;    (set-frame-font "Monaco 11")) ;; old one 
+    (set-face-attribute 'default nil :font "SF Mono-12"))
 
 ;; to see matching parens
 (show-paren-mode t)
@@ -258,14 +264,40 @@
 ;; Setting of markdown command, installed separatey through Brew
 (setq markdown-command "/usr/local/bin/markdown")
 
+
+;; Settings for fido mode, replaced ido mode used previously
+;;(require 'ido)
+(fido-mode t)
+(fido-vertical-mode t)
+
+;; All of these, taken from this video https://www.youtube.com/watch?v=rwKTc4MNmt8
+;; begin
+
 ;; Settings for Treemacs
 (use-package treemacs
-  :ensure t)
+  :ensure t
+  :bind ("<f5>" . treemacs)
+  :custom
+  (treemacs-is-never-other-window t)
+  :hook
+  (treemacs-mode . treemacs-project-follow-mode))
 
-;; Settings for ido mode
-(require 'ido)
-(ido-mode t)
+;; Solaire mode, makes background color of non text based buffers sliglty different
+(use-package solaire-mode
+  :ensure t
+  :hook (after-init . solaire-global-mode)
+  :config
+  (push '(treemacs-window-background-face . solaire-default-face) solaire-mode-remap-alist)
+  (push '(treemacs-hl-line-face . solaire-hl-line-face) solaire-mode-remap-alist))
 
+;; Golden Ratio, active window will be slightly wider
+(use-package golden-ratio
+  :ensure t
+  :hook (after-init . golden-ratio-mode)
+  :custom
+  (golden-ratio-exclude-modes '(occur-mode)))
+
+;; end
 
 ;; New Swift Mode settings by Gemini
 ;; Using eglot and flymake instead of lsp-mode and flycheck
@@ -275,8 +307,9 @@
 
 ;; 1. Setup Tree-sitter grammar for Swift
 ;; This tells Emacs where to download the grammar if it's not installed.
-(setq treesit-language-source-alist
-      '((swift "/Users/skoleckm/.emacs.d/tree-sitter-swift")))
+;;(setq treesit-language-source-alist
+      ;;      '((swift "/Users/skoleckm/.emacs.d/tree-sitter-swift"))) ;; did not work 
+;;      '((swift "https://github.com/alex-pinkus/tree-sitter-swift")))
 
 ;; Helper to install the grammar if missing
 (unless (treesit-language-available-p 'swift)
@@ -334,8 +367,6 @@
   (define-key flymake-mode-map (kbd "M-p") #'flymake-goto-prev-error)
   (define-key flymake-mode-map (kbd "C-c ! l") #'flymake-show-buffer-diagnostics))
 
-(with-eval-after-load 'swfit-ts-mode
-  (define-key swift-ts-mode-map (kbd "C-c p") 'ms/print-swift-var-under-point))
 
 ;; 6. Suggested by ChatGPT to have similiar experience as lsp-mode
 ;;   and nice code completion
@@ -357,11 +388,12 @@
 
 ;; to set the highlight in Corfu code completion popup
 (custom-set-faces
- '(corfu-current
-   ((t
-     :background "#002366" ; dark blue
-     :foreground "#ffffff" ; white text
-     :weight bold))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(corfu-current ((t :background "#002366" :foreground "#ffffff" :weight bold)))
+ '(markdown-code-face ((t :background "#202020"))))
 
 ;; ;; 7. Suggested by ChatGPT to have some better docs
 (use-package eldoc
@@ -370,9 +402,7 @@
   (eldoc-echo-area-use-multiline-p t))
 
 ;; So that eldoc help buffer and minibuffer have better contrast
-(custom-set-faces
- '(markdown-code-face
-   ((t :background "#202020"))))
+
 
 
 ;; nice icons in corfu popup for designating function, field, member etc
@@ -407,14 +437,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(treemacs doom-quit doom-modeline all-the-icons doom-themes use-package markdown-mode ## swift-mode terraform-mode hcl-mode)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+ '(package-selected-packages nil))
+
 
 
 ;; Some unused code
