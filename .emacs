@@ -81,8 +81,42 @@
   :init (doom-modeline-mode 1))
 
 ;; set initial frame(window) size
-(set-frame-height (selected-frame) 70)
-(set-frame-width (selected-frame) 160)
+;;(set-frame-height (selected-frame) 70)
+;;(set-frame-width (selected-frame) 160)
+
+(defun ms/configure-initial-frame-monitor ()
+  "Detect monitors and position the initial frame accordingly on macOS."
+  (let* ((monitors (display-monitor-attributes-list))
+         (monitor-count (length monitors)))
+    
+    (if (> monitor-count 1)
+        ;; TWO OR MORE MONITORS DETECTED
+        (let* ((second-monitor (nth 1 monitors))
+               (geometry (assoc 'geometry second-monitor))
+               ;; Extract X/Y coordinates and dimensions of the 2nd screen
+               (x-origin (nth 1 geometry))
+               (y-origin (nth 2 geometry))
+               (width (nth 3 geometry))
+               (height (nth 4 geometry)))
+          
+          (setq initial-frame-alist
+                `((left . ,(+ x-origin 50))       ; Position 50px from left edge of 2nd monitor
+                  (top . ,(+ y-origin 50))        ; Position 50px from top edge of 2nd monitor
+                  (width . 330)                   ; Custom wider width for the dual-monitor setup
+                  (height . 100)
+                  (user-position . t)
+                  (user-size . t))))
+      
+      ;; SINGLE MONITOR DEFAULT
+      (setq initial-frame-alist
+            '((left . 100)
+              (top . 100)
+              (width . 160)                        ; Standard narrower width for laptop screen
+              (height . 70))))))
+
+;; Run the function during initialization
+(ms/configure-initial-frame-monitor)
+
 
 ;; Cause the region to be highlighted and prevent region-based commands
 ;; from running when the mark isn't active.
@@ -297,7 +331,36 @@
   :custom
   (golden-ratio-exclude-modes '(occur-mode)))
 
+;; Add some settings for Golden Ratio so that it does not mess up Claude Code
+;; nor the ediff that's used by Claude code mode.
+
+(with-eval-after-load 'golden-ratio
+  ;; Prevent golden-ratio from altering the Claude Code buffer
+  (add-to-list 'golden-ratio-exclude-modes 'claude-code-mode)
+  (add-to-list 'golden-ratio-exclude-modes 'claude-code-ide-mode)
+
+  ;; Explicitly inhibit golden-ratio if the rightmost window is active
+  (add-to-list 'golden-ratio-inhibit-functions
+               (lambda ()
+                 (string-match-p "claude-code" (buffer-name (window-buffer))))))
+
+(with-eval-after-load 'ediff
+  ;; Disable golden-ratio when entering Ediff
+  (add-hook 'ediff-before-setup-hook #'golden-ratio-mode-disable)
+  ;; Re-enable golden-ratio when exiting Ediff
+  (add-hook 'ediff-quit-hook #'golden-ratio-mode-enable))
+
 ;; end
+
+;; PostgreSQL client settings
+;; Requires Emacs 29 and git
+(unless (package-installed-p 'pg)
+   (package-vc-install "https://github.com/emarsden/pg-el" nil nil 'pg))
+(unless (package-installed-p 'pgmacs)
+   (package-vc-install "https://github.com/emarsden/pgmacs" nil nil 'pgmacs))
+
+(require 'pgmacs)
+
 
 ;; New Swift Mode settings by Gemini
 ;; Using eglot and flymake instead of lsp-mode and flycheck
@@ -431,13 +494,33 @@
 ;; Swift settings end
 
 
+;; Some experimental Claude Code settings to use Claude from Emacs
+(use-package claude-code-ide
+  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
+  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  :custom
+  (claude-code-ide-terminal-backend 'eat)
+  :config
+  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+
+;; Emacs started from Applications does not get access to PATH. Fixing this:
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+
+;; Claude settings end
+
 ;; End of file.
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages nil)
+ '(package-vc-selected-packages
+   '((claude-code-ide :url
+		      "https://github.com/manzaltu/claude-code-ide.el"))))
 
 
 
