@@ -80,7 +80,7 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
-;; set initial frame(window) size
+;; set initial frame(window) size, old settings, replaced by the function below
 ;;(set-frame-height (selected-frame) 70)
 ;;(set-frame-width (selected-frame) 160)
 
@@ -295,8 +295,55 @@
 ;; Settings for Octave Mode
 (setq inferior-octave-program "/usr/local/bin/octave")
 
-;; Setting of markdown command, installed separatey through Brew
-(setq markdown-command "/usr/local/bin/markdown")
+;; ---------------------
+;; Settings for Markdown
+;; ---------------------
+(require 'httpd nil t)
+(require 'impatient-mode nil t)
+
+;; 1. Define the custom markdown-html filter function
+;; Source - https://stackoverflow.com/a/36189456
+;; Posted by Ehvince, modified by community. License - CC BY-SA 4.0
+(defun ms/markdown-html (buffer)
+  (princ (with-current-buffer buffer
+           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>" 
+                   (buffer-substring-no-properties (point-min) (point-max))))
+         (current-buffer)))
+
+;; 2. Define the main function that starts the preview and opens the browser
+(defun ms/markdown-live-preview ()
+  "Starts httpd, impatient-mode, applies the filter, and opens the browser."
+  (interactive)
+  ;; Start httpd if it's not already running
+  (unless (and (boundp 'httpd-running) httpd-running)
+    (httpd-start))
+  
+  ;; Turn on impatient-mode for this buffer
+  (impatient-mode 1)
+  
+  ;; Set the user filter to our markdown-html function
+  (imp-set-user-filter 'ms/markdown-html)
+  
+  ;; Open the system browser
+  (browse-url "http://localhost:8080/imp")
+  (message "Live preview started in your browser!"))
+
+;; 3. Define the setup function to be run on markdown-mode-hook
+(defun ms/markdown-preview-setup ()
+  "Sets up the keybinding and notifies the user in the minibuffer."
+  ;; Register the local shortcut C-c p for this buffer
+  (local-set-key (kbd "C-c p") 'ms/markdown-live-preview)
+  
+  ;; Tell the user in the minibuffer that the shortcut is available
+  (message "Markdown preview available! Press 'C-c p' to launch live HTML preview."))
+
+;; 4. Hook it into markdown-mode
+(add-hook 'markdown-mode-hook 'ms/markdown-preview-setup)
+
+;; ---------------------
+;; Settings for Markdown End
+;; ---------------------
+
 
 
 ;; Settings for fido mode, replaced ido mode used previously
@@ -361,6 +408,14 @@
 
 (require 'pgmacs)
 
+
+;; Vterm installation
+(use-package vterm
+  :ensure t)
+
+;; Have eat installed as well, even though at the moment it does not work correctly
+(use-package eat
+  :commands eat)
 
 ;; New Swift Mode settings by Gemini
 ;; Using eglot and flymake instead of lsp-mode and flycheck
@@ -499,7 +554,7 @@
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
   :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
   :custom
-  (claude-code-ide-terminal-backend 'eat)
+  (claude-code-ide-terminal-backend 'vterm)
   :config
   (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
 
@@ -517,7 +572,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil)
+ '(package-selected-packages
+   '(all-the-icons claude-code-ide corfu doom-modeline doom-themes eat
+		   edit-indirect exec-path-from-shell golden-ratio
+		   impatient-mode kind-icon markdown-mode no-littering
+		   pgmacs solaire-mode swift-mode swift-ts-mode
+		   treemacs ultra-scroll vterm))
  '(package-vc-selected-packages
    '((claude-code-ide :url
 		      "https://github.com/manzaltu/claude-code-ide.el"))))
