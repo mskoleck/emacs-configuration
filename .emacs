@@ -188,12 +188,6 @@
 ;; set the calendar to start weeks on monday
 (setq calendar-week-start-day 1)
 
-;; have smooth scrolling, that's some old solution, I've changed it to ultra scroll.
-;; both seem to be working similarly though
-;; (add-to-list 'load-path "~/.site-lisp/smooth-scrolling")
-;; (require 'smooth-scrolling)
-;; (setq smooth-scroll-margin 2)
-
 (use-package ultra-scroll
   ;:vc (:url "https://github.com/jdtsmith/ultra-scroll") ; if desired (emacs>=v30)
   :init
@@ -237,21 +231,6 @@
 
 ;; Start emacs as a server so that it can be used by various clients as an editor
 (server-start)
-
-;; emacs yaml mode
-(if (eq (ms/macosxp) t)
-    (progn
-      (add-to-list 'load-path "~/.site-lisp/yaml")
-      (require 'yaml-mode)
-      (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-      (add-hook 'yaml-mode-hook
-		'(lambda ()
-		   (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-      ;; add indent highlights to yaml
-      (add-to-list 'load-path "~/.site-lisp/highlight-indent-guides")
-      (require 'highlight-indent-guides)
-      (add-hook 'yaml-mode-hook 'highlight-indent-guides-mode)))
-
 
 ;; tweak registers behaviour to have a way to quickly store point
 ;; position Allows to move quickly from some point in a file to some
@@ -298,47 +277,29 @@
 ;; ---------------------
 ;; Settings for Markdown
 ;; ---------------------
-(require 'httpd nil t)
-(require 'impatient-mode nil t)
 
-;; 1. Define the custom markdown-html filter function
-;; Source - https://stackoverflow.com/a/36189456
-;; Posted by Ehvince, modified by community. License - CC BY-SA 4.0
-(defun ms/markdown-html (buffer)
-  (princ (with-current-buffer buffer
-           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>" 
-                   (buffer-substring-no-properties (point-min) (point-max))))
-         (current-buffer)))
+(add-to-list 'load-path
+             (expand-file-name "~/.emacs.d/site-lisp/markdown-preview"))
 
-;; 2. Define the main function that starts the preview and opens the browser
+(require 'markdown-preview)
+
 (defun ms/markdown-live-preview ()
-  "Starts httpd, impatient-mode, applies the filter, and opens the browser."
+  ;; "Open a live preview of the current Markdown buffer."
   (interactive)
-  ;; Start httpd if it's not already running
-  (unless (and (boundp 'httpd-running) httpd-running)
-    (httpd-start))
-  
-  ;; Turn on impatient-mode for this buffer
-  (impatient-mode 1)
-  
-  ;; Set the user filter to our markdown-html function
-  (imp-set-user-filter 'ms/markdown-html)
-  
-  ;; Open the system browser
-  (browse-url "http://localhost:8080/imp")
-  (message "Live preview started in your browser!"))
+  ;; Generate the initial preview.
+  (ms/markdown-preview)
+  ;; Enable automatic refresh after every save.
+  (unless ms/markdown-preview-mode
+    (ms/markdown-preview-mode 1)))
 
-;; 3. Define the setup function to be run on markdown-mode-hook
 (defun ms/markdown-preview-setup ()
-  "Sets up the keybinding and notifies the user in the minibuffer."
-  ;; Register the local shortcut C-c p for this buffer
-  (local-set-key (kbd "C-c p") 'ms/markdown-live-preview)
-  
-  ;; Tell the user in the minibuffer that the shortcut is available
-  (message "Markdown preview available! Press 'C-c p' to launch live HTML preview."))
+  "Enable Markdown preview key bindings."
+  (local-set-key (kbd "C-c p")
+                 #'ms/markdown-live-preview)
+  (message
+   "Markdown preview available! Press C-c p to launch live HTML preview."))
 
-;; 4. Hook it into markdown-mode
-(add-hook 'markdown-mode-hook 'ms/markdown-preview-setup)
+(add-hook 'markdown-mode-hook #'ms/markdown-preview-setup)
 
 ;; ---------------------
 ;; Settings for Markdown End
