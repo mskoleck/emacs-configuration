@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ROOT}}vendor/github-markdown.css">
+    <link rel="stylesheet" href="{{ROOT}}vendor/tocbot.css">
+    <link rel="stylesheet" href="{{ROOT}}vendor/github.min.css">
+    
+    <style>
+      body { display: flex; margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+      #toc { 
+	  position: fixed; 
+	  left: 0; 
+	  top: 0; 
+	  bottom: 0; 
+	  width: 280px; 
+	  overflow-y: auto; /* Explicitly lock scroll to vertical axis only */
+	  overflow-x: hidden;
+	  padding: 1rem; 
+	  border-right: 1px solid #ddd; 
+	  box-sizing: border-box; /* Ensures padding doesn't alter width calculations */
+	  }
+
+	   /* Ensure long headings don't stretch the container layout when active */
+	   #toc a {
+	       display: block;
+	       word-wrap: break-word;
+	       overflow-wrap: break-word;
+	   }
+      
+
+      .markdown-body { margin-left: 300px; padding: 2rem; max-width: 900px; width: 100%; }
+
+      /* Fix for Pandoc task list presentation inside github-markdown.css */
+      .markdown-body ul.task-list { padding-left: 1.5rem; list-style-type: none; }
+      .markdown-body li.task-list-item { position: relative; }
+      .markdown-body li.task-list-item input[type="checkbox"] { position: absolute; margin-left: -1.3rem; margin-top: 0.35rem; }
+
+      
+    </style>
+</head>
+<body>
+  <nav id="toc"></nav>
+  <article id="content" class="markdown-body">
+    {{CONTENT}}
+  </article>
+  <script src="{{ROOT}}vendor/highlight.min.js"></script>
+  <script src="{{ROOT}}vendor/tocbot.min.js"></script>
+  <script>
+    hljs.highlightAll();
+    tocbot.init({
+        tocSelector: '#toc',
+        contentSelector: '#content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        collapseDepth: 2,
+        scrollSmooth: false,      /* Turning this off stops the layout jitter when scrolling fast */
+        hasInnerContainers: true, /* Helps Tocbot calculate static nested heights better */
+        disableTocScrollSync: true, /* Stops Tocbot from forcescrolling the sidebar element */
+    });
+  </script>
+</body>
+</html>
