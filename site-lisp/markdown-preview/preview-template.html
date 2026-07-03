@@ -4,9 +4,15 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="{{ROOT}}vendor/github-markdown.css">
     <link rel="stylesheet" href="{{ROOT}}vendor/tocbot.css">
-    <link rel="stylesheet" href="{{ROOT}}vendor/github.min.css">
+    <link rel="stylesheet" href="{{ROOT}}vendor/github-dark.min.css">
     
     <style>
+      /* 1. Tell the entire page and background to use dark mode tones */
+      html, body { 
+          background-color: #0d1117; 
+          color: #c9d1d9;
+      }
+      
       body { display: flex; margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
       #toc { 
 	  position: fixed; 
@@ -17,8 +23,9 @@
 	  overflow-y: auto; /* Explicitly lock scroll to vertical axis only */
 	  overflow-x: hidden;
 	  padding: 1rem; 
-	  border-right: 1px solid #ddd; 
+	  border-right: 1px solid #30363d;; 
 	  box-sizing: border-box; /* Ensures padding doesn't alter width calculations */
+	  background-color: #161b22
 	  }
 
 	   /* Ensure long headings don't stretch the container layout when active */
@@ -41,7 +48,7 @@
 </head>
 <body>
   <nav id="toc"></nav>
-  <article id="content" class="markdown-body">
+  <article id="content" class="markdown-body" data-color-mode="dark" data-dark-theme="dark">
     {{CONTENT}}
   </article>
   <script src="{{ROOT}}vendor/highlight.min.js"></script>
