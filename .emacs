@@ -318,7 +318,8 @@
 ;; Settings for Treemacs
 (use-package treemacs
   :ensure t
-  :bind ("<f5>" . treemacs)
+  :bind (("<f5>" . treemacs)
+		 ("M-0"  . treemacs-select-window))
   :custom
   (treemacs-is-never-other-window t)
   :hook
