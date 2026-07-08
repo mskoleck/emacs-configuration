@@ -370,6 +370,10 @@
 (require 'pgmacs)
 
 
+;; For now let's try Ghostel terminal emulator
+(use-package ghostel
+  :ensure t)
+
 ;; Vterm installation
 (use-package vterm
   :ensure t)
@@ -533,12 +537,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(all-the-icons claude-code-ide corfu doom-modeline doom-themes eat
-		   edit-indirect exec-path-from-shell golden-ratio
-		   impatient-mode kind-icon markdown-mode no-littering
-		   pgmacs solaire-mode swift-mode swift-ts-mode
-		   treemacs ultra-scroll vterm))
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
    '((claude-code-ide :url
 		      "https://github.com/manzaltu/claude-code-ide.el"))))
