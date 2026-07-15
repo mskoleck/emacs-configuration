@@ -322,6 +322,7 @@
 		 ("M-0"  . treemacs-select-window))
   :custom
   (treemacs-is-never-other-window t)
+  (treemacs-width 55)
   :hook
   (treemacs-mode . treemacs-project-follow-mode))
 
