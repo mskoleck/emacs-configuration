@@ -305,6 +305,11 @@
 ;; Settings for Markdown End
 ;; ---------------------
 
+;; Setting for Project.el. so that it supports the same keyboard shortcut as XCode
+;; (Cmd+Shift+o but on my Mac, Cmd serves as Meta)
+(use-package project
+  :ensure nil ; project.el is built-in, so we don't need to download it
+  :bind (("M-O" . project-find-file)))
 
 
 ;; Settings for fido mode, replaced ido mode used previously
