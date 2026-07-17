@@ -305,6 +305,11 @@
 ;; Settings for Markdown End
 ;; ---------------------
 
+;; Setting for Project.el. so that it supports the same keyboard shortcut as XCode
+;; (Cmd+Shift+o but on my Mac, Cmd serves as Meta)
+(use-package project
+  :ensure nil ; project.el is built-in, so we don't need to download it
+  :bind (("M-O" . project-find-file)))
 
 
 ;; Settings for fido mode, replaced ido mode used previously
@@ -318,9 +323,11 @@
 ;; Settings for Treemacs
 (use-package treemacs
   :ensure t
-  :bind ("<f5>" . treemacs)
+  :bind (("<f5>" . treemacs)
+		 ("M-0"  . treemacs-select-window))
   :custom
   (treemacs-is-never-other-window t)
+  (treemacs-width 55)
   :hook
   (treemacs-mode . treemacs-project-follow-mode))
 
